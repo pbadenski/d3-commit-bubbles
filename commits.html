@@ -46,7 +46,7 @@
 <script>
 nv.addGraph(function() {
   var chart = nv.models.scatterChart()
-                .color(d3.scale.category10().range());
+		 .color(d3.scale.category10().range());
 
   chart.tooltipContent(function(key) {
       return '<h3>' + key + '</h3>';
@@ -63,18 +63,18 @@ function transformData(all_commits) {
   var data = [];
 
   for (i = 0; i < all_commits.length; i++) {
-		var commits_by_author = all_commits[i];
+    var commits_by_author = all_commits[i];
     data.push({
       key: commits_by_author.author,
       values: []
     });
 
-		var commits = commits_by_author.commits;
+    var commits = commits_by_author.commits;
     for (j = 0; j < commits.length; j++) {
       data[i].values.push({
         x: commits[j].time,
-			  y: commits[j].testPercentage,
-				size: commits[j].size
+	y: commits[j].testPercentage,
+	size: commits[j].size
       });
     }
   }
