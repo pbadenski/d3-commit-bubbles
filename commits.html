@@ -6,7 +6,7 @@
 		<script src="http://nvd3.org/assets/lib/d3.v3.js"></script>
 		<script src="http://nvd3.org/assets/js/nv.d3.js"></script>
     <script>
-            all_commits = [
+            ALL_COMMITS = [
               {author: "John Doe", commits:  [{
                 time: 100,
                 hash: "1234567890",
@@ -57,16 +57,16 @@ nv.addGraph(function() {
 
   var chart = nv.models.scatterChart()
                 .color(d3.scale.category10().range());
-  var data = transformData(all_commits);
+  var data = transformData(ALL_COMMITS);
 
   chart.tooltipContent(function(key) {
       return '<h3>' + key + '</h3>';
   });
-  chart.forceX([0, findLastCommitTime(all_commits)]);
+  chart.forceX([0, findLastCommitTime(ALL_COMMITS)]);
   chart.forceY([0, 100]);
 
   d3.select('#graph svg')
-      .datum(transformData(all_commits))
+      .datum(transformData(ALL_COMMITS))
       .call(chart);
 
   return chart;
