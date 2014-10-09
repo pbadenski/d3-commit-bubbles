@@ -2,58 +2,73 @@
 <html>
 <head>
     <title>Commit Bubbles</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+		<link href="http://nvd3.org//assets/css/nv.d3.css" rel="stylesheet">
+		<script src="http://nvd3.org/assets/lib/d3.v3.js"></script>
+		<script src="http://nvd3.org/assets/js/nv.d3.js"></script>
     <script>
-        function CommitBubbles($scope, $log) {
-
-            $scope.commits = [
-              {
+            all_commits = [
+              {author: "John Doe", commits:  [{
                 time: 100,
                 hash: "1234567890",
                 testPercentage: 100,
                 size: 44,
-                author: "John Doe"
               },
-              {
+							{
+                time: 200,
+                hash: "1234567890",
+                testPercentage: 90,
+                size: 44,
+              }
+							]},
+              {author: "Mildred", commits: [{
                 time: 455,
                 hash: "1234567890",
                 testPercentage: 15,
                 size: 22,
-                author: "Mildred"
-              }
-            ];
-        }
+              }]}];
     </script>
 </head>
-<body ng-app ng-controller="CommitBubbles" bgcolor="#FFFFFF">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" width="1200" height="1100" xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <g>
-    <text x="0" y="20" font-family="Verdana" font-size="20">
-      All Test
-    </text>
-  </g>
-  <g>
-    <line x1="100" y1="200" x2="1000" y2="200" style="stroke:rgb(0,0,0);stroke-width:2" />
-    <text x="0" y="210" font-family="Verdana" font-size="20">
-      Equal
-    </text>
-  </g>
-  <g>
-    <text x="0" y="380" font-family="Verdana" font-size="20">
-      All Prod
-    </text>
-  </g>
-  <g>
-    <line x1="100" y1="0" x2="100" y2="400" style="stroke:rgb(0,0,0);stroke-width:2" />
-    <text x="900" y="250" font-family="Verdana" font-size="20">
-      Time
-    </text>
-  </g>
-  <g stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none" fill-opacity="1">
-    <g>
-      <circle ng-repeat="commit in commits" ng-attr-cx="{{100 + commit.time}}" ng-attr-cy="{{commit.testPercentage}}" ng-attr-r="{{commit.size}}" fill="red"/>
-    </g>
-  </g>
-</svg>
+<body bgcolor="#FFFFFF">
+  <div id="graph"><svg style="height: 600px; width: 600px"></svg></div>
 </body>
+
+<script>
+nv.addGraph(function() {
+  var chart = nv.models.scatterChart()
+                .color(d3.scale.category10().range());
+
+  chart.tooltipContent(function(key) {
+      return '<h3>' + key + '</h3>';
+  });
+
+  d3.select('#graph svg')
+      .datum(transformData(all_commits))
+      .call(chart);
+
+  return chart;
+});
+
+function transformData(all_commits) {
+  var data = [];
+
+  for (i = 0; i < all_commits.length; i++) {
+		var commits_by_author = all_commits[i];
+    data.push({
+      key: commits_by_author.author,
+      values: []
+    });
+
+		var commits = commits_by_author.commits;
+    for (j = 0; j < commits.length; j++) {
+      data[i].values.push({
+        x: commits[j].time,
+			  y: commits[j].testPercentage,
+				size: commits[j].size
+      });
+    }
+  }
+
+  return data;
+}
+</script>
 </html>
