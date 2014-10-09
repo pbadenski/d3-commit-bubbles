@@ -45,12 +45,25 @@
 
 <script>
 nv.addGraph(function() {
+  var findLastCommitTime = function(all_commits) {
+    var lastCommitTime = 0
+    for (i = 0; i < all_commits.length; i++) {
+      for (j = 0; j < all_commits[i].commits.length; j++) {
+          lastCommitTime = Math.max(lastCommitTime, all_commits[i].commits[j].time)
+        }
+      }
+    return lastCommitTime;
+  };
+
   var chart = nv.models.scatterChart()
-		 .color(d3.scale.category10().range());
+                .color(d3.scale.category10().range());
+  var data = transformData(all_commits);
 
   chart.tooltipContent(function(key) {
       return '<h3>' + key + '</h3>';
   });
+  chart.forceX([0, findLastCommitTime(all_commits)]);
+  chart.forceY([0, 100]);
 
   d3.select('#graph svg')
       .datum(transformData(all_commits))
@@ -73,8 +86,8 @@ function transformData(all_commits) {
     for (j = 0; j < commits.length; j++) {
       data[i].values.push({
         x: commits[j].time,
-	y: commits[j].testPercentage,
-	size: commits[j].size
+        y: commits[j].testPercentage,
+        size: commits[j].size
       });
     }
   }
