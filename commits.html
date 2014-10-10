@@ -63,6 +63,7 @@ nv.addGraph(function() {
   var chart = nv.models.scatterChart()
                 .color(d3.scale.category10().range());
   chart.xAxis.axisLabel('Time');
+  chart.yAxis.axisLabel('Test coverage (%)');
   chart.tooltipContent(function(key) {
       return '<h3>' + key + '</h3>';
   });
