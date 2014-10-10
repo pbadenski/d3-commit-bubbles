@@ -8,36 +8,41 @@
 		<script src="http://underscorejs.org/underscore-min.js"></script>
     <script>
             ALL_COMMITS = [
-              {author: "John Doe", commits:  [{
+              {author: "John Doe", 
                 time: 100,
                 hash: "1234567890",
                 testPercentage: 100,
                 size: 44,
               },
 							{
+                author: "John Doe", 
                 time: 200,
                 hash: "1234567890",
                 testPercentage: 90,
                 size: 84,
-              }]},
-              {author: "Nancy", commits:  [{
+              },
+              {
+                author: "Nancy",
                 time: 150,
                 hash: "1234567890",
                 testPercentage: 50,
                 size: 244,
               },
 							{
+                author: "Nancy",
                 time: 300,
                 hash: "1234567890",
                 testPercentage: 10,
                 size: 144,
-              }]},
-              {author: "Mildred", commits: [{
+              },
+              {
+                author: "Mildred",
                 time: 455,
                 hash: "1234567890",
                 testPercentage: 15,
                 size: 22,
-              }]}];
+              }];
+           ALL_COMMITS = _(ALL_COMMITS).groupBy('author');
     </script>
 </head>
 <body bgcolor="#FFFFFF">
@@ -48,7 +53,7 @@
 nv.addGraph(function() {
   findLastCommitTime = function(all_commits) {
     return _.chain(ALL_COMMITS)
-            .pluck('commits')
+            .values()
             .flatten()
             .pluck('time')
             .max().value();
@@ -88,12 +93,12 @@ nv.addGraph(function() {
 
 function transformData(all_commits) {
   return _(all_commits)
-    .map(function (commits_by_author) {
-      var values = _(commits_by_author.commits).map(
+    .map(function (commits, author) {
+      var values = _(commits).map(
         function (commit) {
           return { x: commit.time, y: commit.testPercentage, size: commit.size };
         });
-      return {key: commits_by_author.author, values: values};
+      return {key: author, values: values};
      });
 }
 </script>
