@@ -51,11 +51,11 @@
 
 <script>
 nv.addGraph(function() {
-  findLastCommitTime = function(all_commits) {
+  var findMaxInCommits = function(all_commits, key) {
     return _.chain(ALL_COMMITS)
             .values()
             .flatten()
-            .pluck('time')
+            .pluck(key)
             .max().value();
   };
 
@@ -66,8 +66,9 @@ nv.addGraph(function() {
   chart.tooltipContent(function(key) {
       return '<h3>' + key + '</h3>';
   });
-  chart.forceX([0, findLastCommitTime(ALL_COMMITS)]);
+  chart.forceX([0, findMaxInCommits(ALL_COMMITS, 'time')]);
   chart.forceY([0, 100]);
+  chart.forceSize([0, findMaxInCommits(ALL_COMMITS, 'size')]);
 
   chart.margin({left: 110, top: 30});
 
