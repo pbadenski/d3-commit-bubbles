@@ -5,6 +5,7 @@
 		<link href="http://nvd3.org//assets/css/nv.d3.css" rel="stylesheet">
 		<script src="http://nvd3.org/assets/lib/d3.v3.js"></script>
 		<script src="http://nvd3.org/assets/js/nv.d3.js"></script>
+		<script src="http://underscorejs.org/underscore-min.js"></script>
     <script>
             ALL_COMMITS = [
               {author: "John Doe", commits:  [{
@@ -45,14 +46,12 @@
 
 <script>
 nv.addGraph(function() {
-  var findLastCommitTime = function(all_commits) {
-    var lastCommitTime = 0
-    for (i = 0; i < all_commits.length; i++) {
-      for (j = 0; j < all_commits[i].commits.length; j++) {
-          lastCommitTime = Math.max(lastCommitTime, all_commits[i].commits[j].time)
-        }
-      }
-    return lastCommitTime;
+  findLastCommitTime = function(all_commits) {
+    return _.chain(ALL_COMMITS)
+            .pluck('commits')
+            .flatten()
+            .pluck('time')
+            .max().value();
   };
 
   var data = transformData(ALL_COMMITS);
@@ -88,26 +87,14 @@ nv.addGraph(function() {
 });
 
 function transformData(all_commits) {
-  var data = [];
-
-  for (i = 0; i < all_commits.length; i++) {
-    var commits_by_author = all_commits[i];
-    data.push({
-      key: commits_by_author.author,
-      values: []
-    });
-
-    var commits = commits_by_author.commits;
-    for (j = 0; j < commits.length; j++) {
-      data[i].values.push({
-        x: commits[j].time,
-        y: commits[j].testPercentage,
-        size: commits[j].size
-      });
-    }
-  }
-
-  return data;
+  return _(all_commits)
+    .map(function (commits_by_author) {
+      var values = _(commits_by_author.commits).map(
+        function (commit) {
+          return { x: commit.time, y: commit.testPercentage, size: commit.size };
+        });
+      return {key: commits_by_author.author, values: values};
+     });
 }
 </script>
 </html>
