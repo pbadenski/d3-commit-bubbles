@@ -55,19 +55,34 @@ nv.addGraph(function() {
     return lastCommitTime;
   };
 
+  var data = transformData(ALL_COMMITS);
   var chart = nv.models.scatterChart()
                 .color(d3.scale.category10().range());
-  var data = transformData(ALL_COMMITS);
-
+  chart.xAxis.axisLabel('Time');
   chart.tooltipContent(function(key) {
       return '<h3>' + key + '</h3>';
   });
   chart.forceX([0, findLastCommitTime(ALL_COMMITS)]);
   chart.forceY([0, 100]);
 
+  chart.margin({left: 110, top: 30});
+
   d3.select('#graph svg')
       .datum(data)
       .call(chart);
+
+  var addExtraXAxisLabel = function (svg) { 
+    return svg.append("text")
+      .style("font-size", 18)
+      .attr('x', 12);
+  };
+  addExtraXAxisLabel(d3.select('#graph svg'))
+      .text("All test")
+      .attr('y', 34);
+
+  addExtraXAxisLabel(d3.select('#graph svg'))
+      .text("All prod")
+      .attr('y', 553);
 
   return chart;
 });
