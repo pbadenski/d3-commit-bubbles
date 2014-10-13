@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Commit Bubbles</title>
+		<link href="http://nvd3.org//assets/css/nv.d3.css" rel="stylesheet">
+		<script src="http://nvd3.org/assets/lib/d3.v3.js"></script>
+		<script src="http://nvd3.org/assets/js/nv.d3.js"></script>
+		<script src="http://underscorejs.org/underscore-min.js"></script>
+    <script>
+            ALL_COMMITS = [
+              {
+                    ts:1288202623006,
+                    hash:"1234567890",
+                    testPercentage:100,
+                    size:55,
+                    author:"John Doe"
+                },
+                {
+                    ts:1288121623006,
+                    hash:"13432435645",
+                    testPercentage:30,
+                    size:81,
+                    author:"John Doe"
+                },
+                {
+                    ts:1288128023006,
+                    hash:"12232435645",
+                    testPercentage:50,
+                    size:50,
+                    author:"Hector"
+                },
+                {
+                    ts:1288323623006,
+                    hash:"2342342344",
+                    testPercentage:15,
+                    size:22,
+                    author:"Mildred"
+                }
+              ];
+    </script>
+</head>
+<body bgcolor="#FFFFFF">
+  <div id="graph"><svg style="height: 600px; width: 600px"></svg></div>
+</body>
+
+<script>
+nv.addGraph(function() {
+  var data = transformData(_.groupBy(ALL_COMMITS, 'author'));
+  var chart = nv.models.scatterChart()
+                .color(d3.scale.category10().range());
+ chart.xAxis
+      .tickFormat(function(d) { 
+          return d3.time.format('%x')(new Date(d)) 
+      })
+      .axisLabel('Time');
+  chart.yAxis.axisLabel('Test coverage (%)');
+  chart.tooltipContent(function(key, x, y, value) {
+      V = value;
+      return '<h3>commit: ' + value.point.hash + '</h3>';
+  });
+  chart.forceX([_.min(_.pluck(ALL_COMMITS, 'ts')), _.max(_.pluck(ALL_COMMITS, 'ts'))]);
+  chart.forceY([0, 100]);
+  chart.forceSize([0, _.max(_.pluck(ALL_COMMITS, 'size'))]);
+
+  chart.margin({left: 110, top: 30, right: 30});
+
+  d3.select('#graph svg')
+      .datum(data)
+      .call(chart);
+
+  var addExtraXAxisLabel = function (svg) { 
+    return svg.append("text")
+      .style("font-size", 18)
+      .attr('x', 12);
+  };
+  addExtraXAxisLabel(d3.select('#graph svg'))
+      .text("All test")
+      .attr('y', 34);
+
+  addExtraXAxisLabel(d3.select('#graph svg'))
+      .text("All prod")
+      .attr('y', 553);
+
+  return chart;
+});
+
+function transformData(all_commits) {
+  return _(all_commits)
+    .map(function (commits, author) {
+      var values = _(commits).map(
+        function (commit) {
+          return { x: commit.ts, y: commit.testPercentage, size: commit.size, hash: commit.hash };
+        });
+      return {key: author, values: values};
+     });
+}
+</script>
+</html>

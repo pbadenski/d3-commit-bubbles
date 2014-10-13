@@ -1,0 +1,16 @@
+{
+    "commits": [
+      {
+        "hash": "1234567890",
+		    "testRatio": "10.0",
+        "size" : "1024",
+        "author" : "John Doe"
+      },
+      {
+        "hash": "1234567890",
+        "testRatio": "10.0",
+        "size" : "1024",
+        "author" : "John Doe"
+      }
+    ]
+}
